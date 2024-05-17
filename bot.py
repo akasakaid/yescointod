@@ -306,7 +306,6 @@ class Bot:
         }
         headers['content-length'] = str(len(json.dumps(data)))
         res = requests.post('https://api.yescoin.gold/user/login',headers=headers,json=data)
-        print(res.text)
         if '"message":"Success"' in res.text:
             token = res.json()['data']['token']
             header,payload,sign = token.split('.')
