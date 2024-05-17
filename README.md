@@ -45,7 +45,7 @@ pip install -r requirements.txt
 
 ### How to get the contents for a data file? follow the video tutorial below
 
-OTW
+[https://youtu.be/-Z7HGqq2Ft4](https://youtu.be/-Z7HGqq2Ft4)
 
 # Discussion
 
