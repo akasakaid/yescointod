@@ -139,15 +139,21 @@ class Bot:
             if multivalue:
                 if int(res_coin) > int(build['multivalue']['cost']):
                     self.levelup(1,'multivalue')
+                    continue
                 self.log(f'{kuning}coins not enough to upgrade multivalue !')
+
             if coinlimit:
                 if int(res_coin) > int(build['coinlimit']['cost']):
                     self.levelup(3,'coinlimit')
+                    continue
                 self.log(f'{kuning}coins not enough to upgrade coinlimit !')
+
             if fillrate:
                 if int(res_coin) > int(build['fillrate']['cost']):
                     self.levelup(2,'fillrate')
+                    continue
                 self.log(f'{kuning}coins not enough to upgrade fillrate !')
+                
             continue
     
     def open_box(self):
