@@ -46,7 +46,7 @@ class Bot:
             os.system('cls' if os.name == 'nt' else 'clear')
         
         res = requests.get('https://raw.githubusercontent.com/akasakaid/they3scoin/main/version.json')
-        open('.http_request.log','a').write(res.text)
+        open('.http_request.log','a').write(res.text + '\n')
         version = res.json()['version']
         message = res.json()['message']
         banner += f"""
@@ -123,7 +123,7 @@ class Bot:
                     recovery_url = 'https://api.yescoin.gold/game/recoverCoinPool'
                     headers['content-length'] = '0'
                     res = requests.post(recovery_url,headers=headers)
-                    open('.http_request.log','a').write(res.text)
+                    open('.http_request.log','a').write(res.text + '\n')
                     if '"message":"Success"' in res.text:
                         self.log(f'{hijau}success recovery energy !')
                         continue
@@ -169,27 +169,41 @@ class Bot:
         headers = self.base_headers
         headers['content-length'] = '0'
         res = requests.post(special_box_url,headers=headers)
-        open('.http_request.log','a').write(res.text)
+        open('.http_request.log','a').write(res.text + '\n')
         if '"message":"Success"' in res.text:
             res = requests.get(special_box_info_url,headers=headers)
-            open('.http_request.log','a').write(res.text)
+            open('.http_request.log','a').write(res.text + '\n')
             if '"message":"Success"' in res.text:
                 data = None
                 if res.json()['data']['autoBox'] is not None:
                     box_type = res.json()['data']['autoBox']['boxType']
                     box_count = res.json()['data']['autoBox']['specialBoxTotalCount']
-                    coin = random.randint(100,int(box_count))
-                    data = {
-                        "boxType": box_type,
-                        "coinCount": coin
-                    }
+                    box_status = res.json()['data']['autoBox']['boxStatus']
+                    if box_status:
+                        coin = random.randint(100,int(box_count))
+                        data = {
+                            "boxType": box_type,
+                            "coinCount": coin
+                        }
+                
+                if res.json()['data']['recoveryBox'] is not None:
+                    box_type = res.json()['data']['recoveryBox']['boxType']
+                    box_count = res.json()['data']['recoveryBox']['specialBoxTotalCount']
+                    box_status = res.json()['data']['recoveryBox']['boxStatus']
+                    if box_status:
+                        coin = random.randint(100,int(box_count))
+                        data = {
+                            "boxType": box_type,
+                            "coinCount": coin
+                        }
+                    
                 if data is None:
                     return False
                     
                 self.countdown(30)
                 headers['content-length'] = str(len(json.dumps(data)))
                 res = requests.post(special_box_collect_url,headers=headers,json=data)
-                open('.http_request.log','a').write(res.text)
+                open('.http_request.log','a').write(res.text + '\n')
                 if '"message":"Success"' in res.text:
                     coll_amount = res.json()['data']['collectAmount']
                     self.log(f'{hijau}success collect {coll_amount} from special box !')
@@ -206,7 +220,7 @@ class Bot:
         headers = self.base_headers
         headers['content-length'] = str(len(json.dumps(data)))
         res = requests.post(url,headers=headers,json=data)
-        open('.http_request.log','a').write(res.text)
+        open('.http_request.log','a').write(res.text + '\n')
         if '"message":"Success"' in res.text:
             self.log(f'{hijau}upgrade {name} successfully !')
             return True
@@ -219,7 +233,7 @@ class Bot:
         headers = self.base_headers
         headers['content-length'] = '0'
         res = requests.get(url,headers=headers)
-        open('.http_request.log','a').write(res.text)
+        open('.http_request.log','a').write(res.text + '\n')
         if '"message":"Success"' in res.text:
             coin = res.json()['data']['currentAmount']
             rank = res.json()['data']['rank']
@@ -238,7 +252,7 @@ class Bot:
         headers = self.base_headers
         headers['content-length'] = '0'
         res = requests.get(url,headers=headers)
-        open('.http_request.log','a').write(res.text)
+        open('.http_request.log','a').write(res.text + '\n')
         if '"message":"Success"' in res.text:
             pool_left = res.json()['data']['coinPoolLeftCount']
             pool_total = res.json()['data']['coinPoolTotalCount']
@@ -253,7 +267,7 @@ class Bot:
         headers = self.base_headers
         headers['content-length'] = str(len(json.dumps(data)))
         res = requests.post(url,headers=headers,json=data)
-        open('.http_request.log','a').write(res.text)
+        open('.http_request.log','a').write(res.text + '\n')
         if '"message":"Success"' in res.text:
             self.log(f'{hijau}success add {putih}{data} {hijau}coins !')
             return True
@@ -266,7 +280,7 @@ class Bot:
         headers = self.base_headers
         headers['content-length'] = '0'
         res = requests.get(url,headers=headers)
-        open('.http_request.log','a').write(res.text)
+        open('.http_request.log','a').write(res.text + '\n')
         if '"message":"Success"' in res.text:
             data = {}
             data['multivalue'] = {}
@@ -347,7 +361,7 @@ class Bot:
         }
         headers['content-length'] = str(len(json.dumps(data)))
         res = requests.post('https://api.yescoin.gold/user/login',headers=headers,json=data)
-        open('.http_request.log','a').write(res.text)
+        open('.http_request.log','a').write(res.text + '\n')
         if '"message":"Success"' in res.text:
             token = res.json()['data']['token']
             header,payload,sign = token.split('.')
