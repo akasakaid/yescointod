@@ -82,6 +82,19 @@ class Bot:
         if not os.path.exists('data.json'):
             open('data.json','w').write(json.dumps({'token':'','exp':'1600000000'},indent=4))
         
+        data = self.data_parsing(data_read)
+        user = json.loads(data['user'])
+        first_name = user['first_name']
+        last_name = None
+        username = None
+        if 'last_name' in user.keys():
+            last_name = user['last_name']
+        if 'username' in user.keys():
+            username = user['username']
+            
+        self.log(f'{hijau}name : {putih}{first_name} {last_name}')
+        self.log(f'{hijau}username : {putih}{username}')
+
         while True:
             print('~' * 50)
             datajs = self.refresh_datajs()
