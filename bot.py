@@ -91,7 +91,7 @@ class Bot:
             last_name = user['last_name']
         if 'username' in user.keys():
             username = user['username']
-            
+
         self.log(f'{hijau}name : {putih}{first_name} {last_name}')
         self.log(f'{hijau}username : {putih}{username}')
 
@@ -260,7 +260,6 @@ class Bot:
 
     def gen_data_login(self,data):
         data = self.data_parsing(data)
-        print(data)
         user = json.loads(data['user'])
         data_login = {}
         data_login['id'] = user['id']
@@ -318,10 +317,8 @@ class Bot:
         data = {
             "code": data
         }
-        print(json.dumps(data))
         headers['content-length'] = str(len(json.dumps(data)))
         res = requests.post('https://api.yescoin.gold/user/login',headers=headers,json=data)
-        print(res.text)
         if '"message":"Success"' in res.text:
             token = res.json()['data']['token']
             header,payload,sign = token.split('.')
