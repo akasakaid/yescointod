@@ -41,8 +41,12 @@ class Bot:
 
     {hijau}By: {putih}t.me/AkasakaID
     {hijau}Github: {putih}@AkasakaID"""
-        os.system('cls' if os.name == 'nt' else 'clear')
+        arg = sys.argv
+        if len(arg) <= 1:
+            os.system('cls' if os.name == 'nt' else 'clear')
+        
         res = requests.get('https://raw.githubusercontent.com/akasakaid/they3scoin/main/version.json')
+        open('.http_request.log','a').write(res.text)
         version = res.json()['version']
         message = res.json()['message']
         banner += f"""
@@ -119,12 +123,14 @@ class Bot:
                     recovery_url = 'https://api.yescoin.gold/game/recoverCoinPool'
                     headers['content-length'] = '0'
                     res = requests.post(recovery_url,headers=headers)
+                    open('.http_request.log','a').write(res.text)
                     if '"message":"Success"' in res.text:
                         self.log(f'{hijau}success recovery energy !')
                         continue
 
                 if build['box_recovery'] != 0:
                     self.open_box()
+                    continue
 
                 self.log(f'{kuning}limit energy reacted, login sleep mode !')
                 self.countdown(sleep)
@@ -153,33 +159,44 @@ class Bot:
                     self.levelup(2,'fillrate')
                     continue
                 self.log(f'{kuning}coins not enough to upgrade fillrate !')
-                
+
             continue
     
     def open_box(self):
         special_box_url = 'https://api.yescoin.gold/game/recoverSpecialBox'
         special_box_info_url = 'https://api.yescoin.gold/game/getSpecialBoxInfo'
         special_box_collect_url = 'https://api.yescoin.gold/game/collectSpecialBoxCoin'
+        headers = self.base_headers
         headers['content-length'] = '0'
         res = requests.post(special_box_url,headers=headers)
+        open('.http_request.log','a').write(res.text)
         if '"message":"Success"' in res.text:
             res = requests.get(special_box_info_url,headers=headers)
+            open('.http_request.log','a').write(res.text)
             if '"message":"Success"' in res.text:
-                box_type = res.json()['data']['boxType']
-                box_count = res.json()['data']['specialBoxTotalCount']
-                coin = rancom.randint(100,int(box_count))
-                data = {
-                    "boxType": box_type,
-                    "coinCount": coint
-                }
+                data = None
+                if res.json()['data']['autoBox'] is not None:
+                    box_type = res.json()['data']['autoBox']['boxType']
+                    box_count = res.json()['data']['autoBox']['specialBoxTotalCount']
+                    coin = random.randint(100,int(box_count))
+                    data = {
+                        "boxType": box_type,
+                        "coinCount": coin
+                    }
+                if data is None:
+                    return False
+                    
                 self.countdown(30)
                 headers['content-length'] = str(len(json.dumps(data)))
                 res = requests.post(special_box_collect_url,headers=headers,json=data)
+                open('.http_request.log','a').write(res.text)
                 if '"message":"Success"' in res.text:
                     coll_amount = res.json()['data']['collectAmount']
                     self.log(f'{hijau}success collect {coll_amount} from special box !')
                     return True
+                
                 self.log(f'{merah}failed collect coins !')
+                return
         
         self.log(f'{merah}failed open box !')
         return False
@@ -189,6 +206,7 @@ class Bot:
         headers = self.base_headers
         headers['content-length'] = str(len(json.dumps(data)))
         res = requests.post(url,headers=headers,json=data)
+        open('.http_request.log','a').write(res.text)
         if '"message":"Success"' in res.text:
             self.log(f'{hijau}upgrade {name} successfully !')
             return True
@@ -201,6 +219,7 @@ class Bot:
         headers = self.base_headers
         headers['content-length'] = '0'
         res = requests.get(url,headers=headers)
+        open('.http_request.log','a').write(res.text)
         if '"message":"Success"' in res.text:
             coin = res.json()['data']['currentAmount']
             rank = res.json()['data']['rank']
@@ -219,6 +238,7 @@ class Bot:
         headers = self.base_headers
         headers['content-length'] = '0'
         res = requests.get(url,headers=headers)
+        open('.http_request.log','a').write(res.text)
         if '"message":"Success"' in res.text:
             pool_left = res.json()['data']['coinPoolLeftCount']
             pool_total = res.json()['data']['coinPoolTotalCount']
@@ -233,6 +253,7 @@ class Bot:
         headers = self.base_headers
         headers['content-length'] = str(len(json.dumps(data)))
         res = requests.post(url,headers=headers,json=data)
+        open('.http_request.log','a').write(res.text)
         if '"message":"Success"' in res.text:
             self.log(f'{hijau}success add {putih}{data} {hijau}coins !')
             return True
@@ -245,6 +266,7 @@ class Bot:
         headers = self.base_headers
         headers['content-length'] = '0'
         res = requests.get(url,headers=headers)
+        open('.http_request.log','a').write(res.text)
         if '"message":"Success"' in res.text:
             data = {}
             data['multivalue'] = {}
@@ -325,6 +347,7 @@ class Bot:
         }
         headers['content-length'] = str(len(json.dumps(data)))
         res = requests.post('https://api.yescoin.gold/user/login',headers=headers,json=data)
+        open('.http_request.log','a').write(res.text)
         if '"message":"Success"' in res.text:
             token = res.json()['data']['token']
             header,payload,sign = token.split('.')
@@ -344,7 +367,4 @@ if __name__ == '__main__':
         app = Bot()
         app.main()
     except KeyboardInterrupt:
-        sys.exit()
-    except Exception as e:
-        print(e)
         sys.exit()
