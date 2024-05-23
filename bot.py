@@ -7,7 +7,6 @@ import requests
 from urllib.parse import unquote
 from base64 import b64decode
 from colorama import *
-from typing import List
 
 init(autoreset=True)
 
@@ -386,7 +385,7 @@ class Bot:
         self.log(f"{merah}login failure")
         return False
 
-    def http(self, url: str, headers: dict, data: List[str, dict] = None):
+    def http(self, url: str, headers: dict, data=None):
         while True:
             try:
                 if data is None:
