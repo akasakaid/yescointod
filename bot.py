@@ -181,7 +181,7 @@ class Bot:
         res = requests.post(special_box_url, headers=headers)
         open(".http_request.log", "a").write(res.text + "\n")
         if '"message":"Success"' in res.text:
-            res = self.htp(special_box_info_url, headers)
+            res = self.http(special_box_info_url, headers)
             if '"message":"Success"' in res.text:
                 data = None
                 if res.json()["data"]["autoBox"] is not None:
