@@ -86,6 +86,9 @@ class Bot:
             datas = [i for i in open("data.txt").read().splitlines() if len(i) > 0]
             for no, data in enumerate(datas):
                 print(line)
+                self.log(
+                    f"{hijau}account number : {putih}{no + 1}{hijau}/{putih}{len(datas)}"
+                )
                 parser = self.marin_kitagawa(data)
                 _user = parser.get("user")
                 if _user is None:
@@ -111,12 +114,13 @@ class Bot:
                     self.user_info()
                     build = self.get_build_info()
                     if isinstance(build, bool):
+                        print(build)
                         continue
 
                     coin = random.randint(self.tap_start, self.tap_end)
                     energy_used = coin * int(build["multivalue"]["value"])
                     res_energy = self.get_energy()
-                    if res_energy is False or int(energy_used) > int(res_energy):
+                    if int(energy_used) > int(res_energy):
                         if build["energy_recovery"] != 0:
                             recovery_url = (
                                 "https://api.yescoin.gold/game/recoverCoinPool"
@@ -132,7 +136,6 @@ class Bot:
                             self.open_box()
                             continue
 
-                        self.log(f"{kuning}limit energy reacted, login sleep mode !")
                         res_coin = self.user_info()
                         build = self.get_build_info()
                         if isinstance(build, bool):
@@ -141,28 +144,32 @@ class Bot:
                         if self.multivalue:
                             if int(res_coin) > int(build["multivalue"]["cost"]):
                                 self.levelup(1, "multivalue")
-                                continue
-                            self.log(
-                                f"{kuning}coins not enough to upgrade multivalue !"
-                            )
+                            else:
+                                self.log(
+                                    f"{kuning}coins not enough to upgrade multivalue !"
+                                )
 
                         if self.coinlimit:
                             if int(res_coin) > int(build["coinlimit"]["cost"]):
                                 self.levelup(3, "coinlimit")
-                                continue
-                            self.log(f"{kuning}coins not enough to upgrade coinlimit !")
+                            else:
+                                self.log(
+                                    f"{kuning}coins not enough to upgrade coinlimit !"
+                                )
 
                         if self.fillrate:
                             if int(res_coin) > int(build["fillrate"]["cost"]):
                                 self.levelup(2, "fillrate")
-                                continue
-                            self.log(f"{kuning}coins not enough to upgrade fillrate !")
-                            break
+                            else:
+                                self.log(
+                                    f"{kuning}coins not enough to upgrade fillrate !"
+                                )
+                        break
+
                     self.collect_coin(coin)
                     self.countdown(self.interval)
-
                     continue
-                self.countdown(self.sleep)
+            self.countdown(self.sleep)
 
     def open_box(self):
         special_box_url = "https://api.yescoin.gold/game/recoverSpecialBox"
